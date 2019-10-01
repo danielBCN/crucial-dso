@@ -72,7 +72,8 @@ Since the applications will need the client, you may want to install it
 (`maven install`) in your local Maven repository.
 The server will be contained in an archive file at `server/target/server-*.tar.gz`.
 Then, to launch the server, uncompress and run the script `server.sh` where
-desired.
+desired. This script binds by default to `0.0.0.0` (when launched with no arguments).
+If you want to allow remote access, you will have to modify the script. 
 
 Every class used by a client should be known at the server.
 This requires to add the appropriates `.class` or `jar` files to the classpath
@@ -93,11 +94,15 @@ Edit the jgroups config file (`jgroups-ec2.xml`) and configure the previously cr
 />
 ```
 
-To run in EC2, launch the server with this argument:
+All the servers set up with the previous configuration will automatically form a cluster. 
+
+To run in EC2, launch the server with this argument on each VM:
 
 ```bash
 ./server.sh -ec2
 ```
+
+With this argument, the script automatically binds the DSO server to the public IP address.
 
 If the Crucial DSO cluster is inside a VPC, run the following command instead:
 
