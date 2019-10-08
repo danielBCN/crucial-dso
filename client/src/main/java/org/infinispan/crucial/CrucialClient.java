@@ -14,7 +14,7 @@ public class CrucialClient{
     private Factory factory;
 
 
-    public CrucialClient(String server){
+    private CrucialClient(String server){
         factory = Factory.get(server);
     }
 
