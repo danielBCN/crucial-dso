@@ -1,6 +1,11 @@
 package org.infinispan.crucial;
 
 
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+
 /**
  * A Creson shared object implementing a barrier.
  * <p>
@@ -8,7 +13,7 @@ package org.infinispan.crucial;
  *
  * @author Pierre, Gerard
  */
-public class CCyclicBarrier{
+public class CCyclicBarrier implements Externalizable {
 
     /**
      * The number of parties
@@ -25,18 +30,17 @@ public class CCyclicBarrier{
      */
     private int count;
 
-    public CCyclicBarrier(){
-    }
+    public CCyclicBarrier() {}
 
-    public CCyclicBarrier(int parties){
+    public CCyclicBarrier(int parties) {
         this.parties = parties;
         this.count = parties;
 
     }
 
-    public synchronized int await(){
+    public synchronized int await() {
         final Generation g = generation;
-        int index = -- count;
+        int index = --count;
 
         if (index == 0) { // tripped
             nextGeneration();
@@ -57,7 +61,7 @@ public class CCyclicBarrier{
      * Updates state on barrier trip and wakes up everyone.
      * Called only while holding lock.
      */
-    private void nextGeneration(){
+    private void nextGeneration() {
         // signal completion of last generation
         this.notifyAll();
         // set up next generation
@@ -70,8 +74,22 @@ public class CCyclicBarrier{
      *
      * @return the number of parties required to trip this barrier
      */
-    public int getParties(){
+    public int getParties() {
         return parties;
+    }
+
+    @Override
+    public void writeExternal(ObjectOutput out) throws IOException {
+        out.writeInt(parties);
+        out.writeInt(count);
+        out.writeObject(generation);
+    }
+
+    @Override
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+        parties = in.readInt();
+        count = in.readInt();
+        generation = (Generation) in.readObject();
     }
 
     /**
@@ -79,6 +97,6 @@ public class CCyclicBarrier{
      * The generation changes whenever the barrier is tripped, or
      * is reset.
      */
-    private static class Generation{
+    private static class Generation {
     }
 }

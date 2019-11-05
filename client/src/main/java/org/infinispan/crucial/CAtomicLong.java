@@ -1,16 +1,15 @@
 package org.infinispan.crucial;
 
 
-import java.io.Serializable;
+import java.io.*;
 
 /**
  * @author Daniel
  */
-public class CAtomicLong implements Serializable {
+public class CAtomicLong implements Externalizable {
     private long value = 0;
 
-    public CAtomicLong() {
-    }
+    public CAtomicLong() {}
 
     public CAtomicLong(long initialValue) {
         value = initialValue;
@@ -110,5 +109,15 @@ public class CAtomicLong implements Serializable {
      */
     public double doubleValue() {
         return (double) get();
+    }
+
+    @Override
+    public void writeExternal(ObjectOutput out) throws IOException {
+        out.writeLong(value);
+    }
+
+    @Override
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+        value = in.readLong();
     }
 }

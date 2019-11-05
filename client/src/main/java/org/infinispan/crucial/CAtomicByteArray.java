@@ -1,16 +1,14 @@
 package org.infinispan.crucial;
 
-import java.io.Serializable;
+import java.io.*;
 
 /**
- *
  * @author Daniel
  */
-public class CAtomicByteArray implements Serializable{
+public class CAtomicByteArray implements Externalizable {
     private byte[] value;
 
-    public CAtomicByteArray() {
-    }
+    public CAtomicByteArray() {}
 
     public CAtomicByteArray(byte[] initialValue) {
         value = initialValue;
@@ -41,5 +39,15 @@ public class CAtomicByteArray implements Serializable{
      */
     public String toString() {
         return new String(get());
+    }
+
+    @Override
+    public void writeExternal(ObjectOutput out) throws IOException {
+        out.writeObject(value);
+    }
+
+    @Override
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+        value = (byte[]) in.readObject();
     }
 }

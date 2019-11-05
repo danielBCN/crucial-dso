@@ -8,19 +8,16 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- *
- *
  * @author Daniel
  */
-public class CFuture<V> implements java.util.concurrent.Future<V>, Externalizable{
+public class CFuture<V> implements java.util.concurrent.Future<V>, Externalizable {
 
-    public int status = 0; // 0 => init, 1 => done, -1 => cancelled
-    public V v;
+    private int status = 0; // 0 => init, 1 => done, -1 => cancelled
+    private V v;
 
-    public CFuture(){
-    }
+    public CFuture() {}
 
-    public synchronized void set(V v){
+    public synchronized void set(V v) {
         if (status != 0) return;
         this.v = v;
         status = 1;
@@ -28,19 +25,19 @@ public class CFuture<V> implements java.util.concurrent.Future<V>, Externalizabl
     }
 
     @Override
-    public boolean cancel(boolean mayInterruptIfRunning){
+    public boolean cancel(boolean mayInterruptIfRunning) {
         throw new IllegalStateException();
     }
 
     @Override
-    public synchronized V get() throws InterruptedException{
+    public synchronized V get() throws InterruptedException {
         if (status == 0)
             this.wait();
         return v;
     }
 
     @Override
-    public synchronized V get(long timeout, TimeUnit unit) throws InterruptedException, TimeoutException{
+    public synchronized V get(long timeout, TimeUnit unit) throws InterruptedException, TimeoutException {
         if (status == 0)
             this.wait(TimeUnit.MILLISECONDS.convert(timeout, unit));
         if (status == 0)
@@ -49,23 +46,23 @@ public class CFuture<V> implements java.util.concurrent.Future<V>, Externalizabl
     }
 
     @Override
-    public boolean isCancelled(){
+    public boolean isCancelled() {
         return false;
     }
 
     @Override
-    public synchronized boolean isDone(){
+    public synchronized boolean isDone() {
         return status == 1;
     }
 
     @Override
-    public void writeExternal(ObjectOutput objectOutput) throws IOException{
+    public void writeExternal(ObjectOutput objectOutput) throws IOException {
         objectOutput.writeInt(status);
         objectOutput.writeObject(v);
     }
 
     @Override
-    public void readExternal(ObjectInput objectInput) throws IOException, ClassNotFoundException{
+    public void readExternal(ObjectInput objectInput) throws IOException, ClassNotFoundException {
         status = objectInput.readInt();
         v = (V) objectInput.readObject();
     }

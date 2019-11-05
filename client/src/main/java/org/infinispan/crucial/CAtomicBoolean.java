@@ -1,11 +1,11 @@
 package org.infinispan.crucial;
 
-import java.io.Serializable;
+import java.io.*;
 
 /**
  * @author Daniel
  */
-public class CAtomicBoolean implements Serializable{
+public class CAtomicBoolean implements Externalizable {
     private boolean value;
 
     /**
@@ -13,22 +13,21 @@ public class CAtomicBoolean implements Serializable{
      *
      * @param initialValue the initial value
      */
-    public CAtomicBoolean(boolean initialValue){
+    public CAtomicBoolean(boolean initialValue) {
         value = initialValue;
     }
 
     /**
      * Creates a new {@code CAtomicBoolean} with initial value {@code false}.
      */
-    public CAtomicBoolean(){
-    }
+    public CAtomicBoolean() {}
 
     /**
      * Returns the current value.
      *
      * @return the current value
      */
-    public boolean get(){
+    public boolean get() {
         return value;
     }
 
@@ -41,8 +40,8 @@ public class CAtomicBoolean implements Serializable{
      * @return {@code true} if successful. False return indicates that
      * the actual value was not equal to the expected value.
      */
-    public boolean compareAndSet(boolean expect, boolean update){
-        if (! value ^ expect) {
+    public boolean compareAndSet(boolean expect, boolean update) {
+        if (!value ^ expect) {
             value = update;
             return true;
         }
@@ -54,7 +53,7 @@ public class CAtomicBoolean implements Serializable{
      *
      * @param newValue the new value
      */
-    public void set(boolean newValue){
+    public void set(boolean newValue) {
         value = newValue;
     }
 
@@ -64,11 +63,11 @@ public class CAtomicBoolean implements Serializable{
      * @param newValue the new value
      * @return the previous value
      */
-    public boolean getAndSet(boolean newValue){
+    public boolean getAndSet(boolean newValue) {
         boolean prev;
         do {
             prev = get();
-        } while (! compareAndSet(prev, newValue));
+        } while (!compareAndSet(prev, newValue));
         return prev;
     }
 
@@ -77,7 +76,17 @@ public class CAtomicBoolean implements Serializable{
      *
      * @return the String representation of the current value
      */
-    public String toString(){
+    public String toString() {
         return Boolean.toString(get());
+    }
+
+    @Override
+    public void writeExternal(ObjectOutput out) throws IOException {
+        out.writeBoolean(value);
+    }
+
+    @Override
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+        value = in.readBoolean();
     }
 }

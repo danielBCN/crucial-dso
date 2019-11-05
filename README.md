@@ -34,12 +34,14 @@ To remotely share objects, Crucial maintains them in a separated in-memory
 layer. Shared objects are made so by annotating their declaration with
 
 ```java
-@Shared(key="counter")
-Long counter = new Long(0);
+@Shared(key="foo")
+Foo bar = new Foo();
 ```
 
 These objects are wait-free and linearizable, meaning that concurrent method
 invocations behave as if they were executed by a single thread.
+Shared objects are simple POJOs with the restriction that they must implement
+Externalizable and have a no-arg constructor.<sup>1</sup>
 
 You can find application examples in our
 [examples repository](https://github.com/danielBCN/crucial-examples).
@@ -58,6 +60,11 @@ The client application creates and manages the execution of cloud threads, and
 all of them access the the shared data using the DSO layer.
 
 ## Usage
+
+This project is built on top of a certain version of Infinispan that requires
+Java 8. Additionally, AWS Lambda only supports (out-of-the-box) Java 8 runtimes.
+Therefore, this projects needs to be compiled and executed with Java 8.
+Newer versions will result in compilation/execution errors.
 
 ### Application and cloud threads
 Applications are built like simple Java code that uses Crucial's abstractions.
@@ -82,9 +89,12 @@ directory (by default, it loads from `/tmp`).
 
 ## Crucial DSO layer at Amazon EC2 (cluster)
 
-When running a Crucial DSO cluster in Amazon EC2, you will need to create an AWS S3 bucket (e.g. `crucial-s3ping`) that will be used by the Crucial DSO server as cluster information store.
+When running a Crucial DSO cluster in Amazon EC2, you will need to create an
+AWS S3 bucket (e.g. `crucial-s3ping`) that will be used by the Crucial DSO 
+server as cluster information store.
 
-Edit the jgroups config file (`jgroups-ec2.xml`) and configure the previously created S3 bucket under the `S3_PING` tag. Example:
+Edit the jgroups config file (`jgroups-ec2.xml`) and configure the previously
+created S3 bucket under the `S3_PING` tag. Example:
 
 ```xml
 <S3_PING
@@ -94,7 +104,8 @@ Edit the jgroups config file (`jgroups-ec2.xml`) and configure the previously cr
 />
 ```
 
-All the servers set up with the previous configuration will automatically form a cluster. 
+All the servers set up with the previous configuration will automatically form
+a cluster. 
 
 To run in EC2, launch the server with this argument on each VM:
 
@@ -102,7 +113,8 @@ To run in EC2, launch the server with this argument on each VM:
 ./server.sh -ec2
 ```
 
-With this argument, the script automatically binds the DSO server to the public IP address.
+With this argument, the script automatically binds the DSO server to the public
+IP address.
 
 If the Crucial DSO cluster is inside a VPC, run the following command instead:
 
@@ -112,4 +124,11 @@ If the Crucial DSO cluster is inside a VPC, run the following command instead:
 
 ## Publication
 
-"On the FaaS Track: Building Stateful Distributed Applications with Serverless Architectures", Daniel Barcelona-Pons, Marc Sánchez-Artigas, Gerard París, Pierre Sutra, Pedro García-López. ACM/IFIP International Middleware Conference, Davis, CA, USA, December 9-13, 2019.
+"On the FaaS Track: Building Stateful Distributed Applications with Serverless
+Architectures", Daniel Barcelona-Pons, Marc Sánchez-Artigas, Gerard París,
+Pierre Sutra, Pedro García-López. ACM/IFIP International Middleware Conference,
+Davis, CA, USA, December 9-13, 2019.
+
+-----
+
+1. Objects must be Externalizable in order to support cluster topology changes.
