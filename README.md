@@ -17,7 +17,7 @@ Crucial associates each thread in a multi-threaded application with a FaaS
 function invocation. We call this new form of thread _cloud thread_.
 
 With our abstraction 
-[here](https://github.com/danielBCN/crucial-examples/tree/master/aws-executor),
+[here](https://github.com/danielBCN/crucial-executor),
 a regular Java thread creation such as
 
 ```java
@@ -31,7 +31,7 @@ Thread t = new CloudThread(runnable);
 ```
 
 To remotely share objects, Crucial maintains them in a separated in-memory
-layer. Shared objects are made so by annotating their declaration with
+layer. You designate shared objects by annotating their declaration with:
 
 ```java
 @Shared(key="foo")
@@ -62,7 +62,7 @@ all of them access the the shared data using the DSO layer.
 ## Usage
 
 This project is built on top of a certain version of Infinispan that requires
-Java 8. Additionally, AWS Lambda only supports (out-of-the-box) Java 8 runtimes.
+Java 8.
 Therefore, this projects needs to be compiled and executed with Java 8.
 Newer versions will result in compilation/execution errors.
 
@@ -89,7 +89,7 @@ directory (by default, it loads from `/tmp`).
 
 ## Crucial DSO layer at Amazon EC2 (cluster)
 
-When running a Crucial DSO cluster in Amazon EC2, you will need to create an
+When running a Crucial DSO cluster on Amazon EC2, you will need to create an
 AWS S3 bucket (e.g. `crucial-s3ping`) that will be used by the Crucial DSO 
 server as cluster information store.
 
