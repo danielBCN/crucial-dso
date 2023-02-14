@@ -1,3 +1,5 @@
+⚡This project has been moved to [crucial-project/dso](https://github.com/crucial-project/dso).
+
 # CRUCIAL
 _Stateful Distributed Applications over Serverless Architectures_
 
